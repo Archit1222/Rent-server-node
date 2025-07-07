@@ -83,7 +83,7 @@ app.use((err, req, res, next) => {
 
 app.use((req, res) => res.status(404).json('server is running.'))
 
-server.listen(PORT, () => console.log(`server is listening on ${PORT}`))
+server.listen(PORT,"0.0.0.0", () => console.log(`server is listening on ${PORT}`))
 
 
 
