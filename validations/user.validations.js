@@ -9,7 +9,7 @@ module.exports.signUp = yup.object({
         email: yup.string().required().email(),
         password: yup.string().required(),
         refferal: yup.string().optional(),
-        gender:yup.string().required().oneOf(["male","female","others"])
+        gender:yup.string().optional().oneOf(["male","female","others"])
     })
 })
 
