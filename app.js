@@ -39,6 +39,7 @@ for (let i of arr) {
 
 app.use(cors({
     origin: '*',
+    allowedOrigins:['https://rent-server-admin.vercel.app/'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']
 }))
 app.use(express.json({ limit: '50mb' }));
