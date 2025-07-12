@@ -54,7 +54,7 @@ module.exports.signUp = async (req, res, next) => {
                 //     global.io.to(isValid.socketId).emit(socketConstants.coinsUpdate, { coins: updated.coins })
                 // }
             }
-            const userData = await userSchema({gender, userName,email, password: await utils.hashPassword(password), selfRefferalCode: stringGen(10), refferalCode: refferal ? refferal : null }).save()
+            const userData = await userSchema({gender:gender|| null, userName,email, password: await utils.hashPassword(password), selfRefferalCode: stringGen(10), refferalCode: refferal ? refferal : null }).save()
             const token = utils.SIGNJWT({ id: userData._id })
             ejs.renderFile('views/verifyEmail.ejs', { email: email, url: `${process.env.SERVER_HOST}/api/v1/user/verify-email?userId=${token}`, year: new Date().getFullYear() }, (err, data) => {
                 if (err) console.log(err)
