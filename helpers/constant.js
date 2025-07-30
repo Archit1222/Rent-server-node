@@ -126,7 +126,8 @@ module.exports.messages = {
     wonTourn: 'You won the tournament',
     lostTourn: 'You lost the tournament',
     tournamentEnded: "Tournament has been ended.",
-    deviceTokenError: "Something went wrong. Please restart the application."
+    deviceTokenError: "Something went wrong. Please restart the application.",
+    userdelete:"User deleted successfully."
 
 }
 

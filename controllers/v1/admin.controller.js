@@ -474,6 +474,21 @@ module.exports.userEdit = async (req, res) => {
 }
 
 
+module.exports.userdelete = async (req, res) => {
+
+    const { userId } = req.body
+    if (!utils.validMongoId(userId)) return res.status(responseStatus.badRequest).json(utils.errorResponse(messages.inValidId))
+    let userDetails = await userSchema.findOne({ _id: userId })
+    if (userDetails) {
+        await userSchema.deleteOne({_id:userId})
+
+        await shopRentModel.deleteMany({userId:userId})
+        return res.status(responseStatus.success).json(utils.successResponse(messages.userdelete))
+    }
+    else return res.status(responseStatus.badRequest).json(utils.errorResponse(messages.userNot))
+}
+
+
 module.exports.addCoins = async (req, res) => {
     const { userId, coins } = req.body
     const updatedCoins = await userSchema.findOneAndUpdate({ _id: userId }, { $inc: { coins } }, { new: true })

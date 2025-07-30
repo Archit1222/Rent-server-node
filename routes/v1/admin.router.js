@@ -50,6 +50,9 @@ adminRoutes.put("/block/:id", auth, adminController.block);
 adminRoutes.post("/view", auth, adminController.userView);
 
 adminRoutes.put("/user-edit", auth, multer, adminController.userEdit);
+  
+adminRoutes.post("/user-delete", auth, multer, adminController.userdelete);
+
 
 adminRoutes.post(
   "/add-tournament",
