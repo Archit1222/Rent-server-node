@@ -5,7 +5,8 @@ const adminSchema = mongoose.Schema({
     deviceToken: { type: String, default: null },
     forgotToken: { type: String, default: null },
     androidVersion:{type:String,default:null},
-    iosVersion:{type:String,default:null}
+    iosVersion:{type:String,default:null},
+    shopCounter:{type:Number,default:0}
 }, { timestamps: true })
 
 module.exports = mongoose.model('admin', adminSchema)

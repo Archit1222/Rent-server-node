@@ -39,7 +39,8 @@ const userSchema = mongoose.Schema({
     socialId: { type: String, default: null },
     //type:{type: String, default: null,enum:['apple','google'] },
     firstLogin:{type:Boolean,default:true},
-    gender:{type:String,enum:["male","female","others",null],default:null,allowNull:true}
+    gender:{type:String,enum:["male","female","others",null],default:null,allowNull:true},
+    counter:{type:Number,default:0}
 }, { timestamps: true })
 
 module.exports = mongoose.model('user', userSchema)
