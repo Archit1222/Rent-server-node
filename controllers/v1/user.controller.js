@@ -817,9 +817,12 @@ module.exports.enterShop = async (req, res, next) => {
     //   }
 
       let shopRent=await shopRentSchema({shopId,userId:req.user._id}).save()
-    
+      let count= await userSchema.find({}).count()
 
-      return res.status(responseStatus.success).json(utils.successResponse('Entry noted successfully.', shopRent))
+      return res.status(responseStatus.success).json(utils.successResponse('Entry noted successfully.', {
+        shopRent,
+        totaluserCount:count
+    }))
 
     } catch (error) {
         next(error)
