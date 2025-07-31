@@ -434,11 +434,13 @@ module.exports.getProfile = async (req, res, next) => {
     try {
         const user = req.user
         let message = messages
+         let count= await userSchema.find({}).count()
         //const purchases = await purchaseSchema.find({ user: user._id }).populate({ path: 'item', select: 'name imageUrl type' })
         return res.status(responseStatus.success).json(utils.successResponse(message.profile, {
             userId: user._id,
             userName: user.userName,
             email:user.email,
+            totaluserCount:count
             // country: user.country,
             // day: user.day,
             // month: user.month,
