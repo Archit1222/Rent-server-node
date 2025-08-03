@@ -25,6 +25,7 @@ const matchSchema = require('../../models/match.model')
 const { shopConfig } = require('../../helpers/shopConfig')
 const { tournamentFixture } = require('./gamePlayhelper')
 const adminModel = require('../../models/admin.model')
+const countermodel= require('../../models/counter.model')
 
 function stringGen(len) {
     var text = "";
@@ -139,7 +140,8 @@ module.exports.login = async (req, res, next) => {
                     //const alreadyMatch = await matchSchema.findOne({ players: user?._id, endTime: null }).lean()
                     //if (alreadyMatch) return res.status(responseStatus.badRequest).json(utils.errorResponse(user.language == "en" ? messages.alreadyInMatch : swMessages.alreadyInMatch))
                     //global.io.to(user.socketId).emit(socketConstants.error, { message: user.language == "en" ? messages.deviceErr : swMessages.deviceErr, status: 401 })
-                    await userSchema.updateOne({ _id: user._id }, { deviceToken })
+                    await countermodel.updateOne({},{$inc:{counter:1}})
+                    await userSchema.updateOne({ _id: user._id }, { deviceToken})
                     const token = utils.SIGNJWT({ id: user._id, deviceToken, password: user.password })
                     return res.status(responseStatus.success).json(utils.successResponse(message.loggedIn, { token }))
 
@@ -434,11 +436,14 @@ module.exports.getProfile = async (req, res, next) => {
     try {
         const user = req.user
         let message = messages
+         let count= await countermodel.findOne({})
+
         //const purchases = await purchaseSchema.find({ user: user._id }).populate({ path: 'item', select: 'name imageUrl type' })
         return res.status(responseStatus.success).json(utils.successResponse(message.profile, {
             userId: user._id,
             userName: user.userName,
             email:user.email,
+            totaluserCount:count.counter
             // country: user.country,
             // day: user.day,
             // month: user.month,
@@ -817,9 +822,12 @@ module.exports.enterShop = async (req, res, next) => {
     //   }
 
       let shopRent=await shopRentSchema({shopId,userId:req.user._id}).save()
-    
+      let count= await countermodel.findOne({})
 
-      return res.status(responseStatus.success).json(utils.successResponse('Entry noted successfully.', shopRent))
+      return res.status(responseStatus.success).json(utils.successResponse('Entry noted successfully.', {
+        shopRent,
+        totaluserCount:count.counter
+    }))
 
     } catch (error) {
         next(error)

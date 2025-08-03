@@ -890,7 +890,12 @@ module.exports.tournamentDetail = async (req, res) => {
 
 
 module.exports.shopList = async (req, res, next) => {
-    const { offset, limit, search, sort, order, type } = req.body
+    let { offset, limit, search, sort, order, type } = req.body
+
+    if(req.headers['x-access-token']){
+        sort="createdAt",
+        order=1
+    }
 
     let pagination = [{ $skip: 0 }, { $limit: 10 }]
 
