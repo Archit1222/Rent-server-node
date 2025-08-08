@@ -321,12 +321,52 @@ module.exports.dashboard = async (req, res, next) => {
        let totalShops=await shopModel.find({ }).countDocuments()
 
         let totalQueries=await QuerySchema.find({ }).countDocuments()
+        
+        // Calculate date range for graph data
+        let graphStartDate, graphEndDate;
+        
+        if (req.body.startDate && req.body.endDate) {
+            // Use provided start and end dates
+            graphStartDate = new Date(req.body.startDate);
+            graphEndDate = new Date(req.body.endDate);
+        } else {
+            // Default to last 7 days
+            graphStartDate = new Date(moment().utc().subtract(90, 'days').startOf('day'));
+            graphEndDate = new Date(moment().utc().endOf('day'));
+        }
+
+        let graphData = await userSchema.aggregate([
+            {
+                $match: {
+                    emailVerified: true,
+                    createdAt: {
+                        $gte: graphStartDate,
+                        $lte: graphEndDate
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$createdAt"
+                        }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ])
 
 
         return res.status(responseStatus.success).json(utils.successResponse(messages.dashboard, {
             totalUsers: totalUsers,
-            totalShops:totalShops,
-            queries:totalQueries
+            totalShops: totalShops,
+            queries: totalQueries,
+            graphData: graphData
         }))
     }
     catch (err) {
