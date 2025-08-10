@@ -60,6 +60,14 @@ userRoutes.post('/contact-us',validator(validation.contactUs),auth, userControll
 
 userRoutes.post('/enterShop',validator(validation.enterShop),auth, userController.enterShop)
 
+userRoutes.post('/admin-contact-us',validator(validation.admincontactUs),auth, userController.admincontactUs)
+
+//userRoutes.post('/contact-us', userController.enterShop)
+
+userRoutes.get('/contact-us-page', userController.contactusPage)
+
+
+
 
 
 module.exports = userRoutes

@@ -179,6 +179,14 @@ module.exports.contactUs = yup.object({
     })
 })
 
+module.exports.admincontactUs = yup.object({
+    body: yup.object({
+        email: yup.string().required().email(),
+        message:yup.string().required(),
+        name:yup.string().required(),
+    })
+})
+
 module.exports.enterShop = yup.object({
     body: yup.object({
         shopId: yup.string().required()

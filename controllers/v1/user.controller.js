@@ -760,6 +760,13 @@ module.exports.termsAndConditions = async (req, res, next) => {
     catch (err) { next(err); }
 }
 
+
+module.exports.contactusPage = async (req, res, next) => {
+
+    try { return res.render('contactus.ejs'); }
+    catch (err) { next(err); }
+}
+
 module.exports.getFixtureSrceenData = async (req, res, next) => {
 
     try {
@@ -802,6 +809,19 @@ module.exports.contactUs = async (req, res, next) => {
        let query= await QuerySchema.create({email,concern,userId:req.user._id,name,shopType})
 
         return res.status(responseStatus.success).json(utils.successResponse('Query updated to admin successfully.', query))
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports.admincontactUs = async (req, res, next) => {
+    try {
+       const {email,message,name}=req.body
+
+        sendEmail(process.env.ADMIN_MAIL,message,)
+
+        return res.status(responseStatus.success).json(utils.successResponse('Request sent successfully.'))
 
     } catch (error) {
         next(error)
