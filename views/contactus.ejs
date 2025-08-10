@@ -67,7 +67,7 @@
       };
 
       try {
-        const res = await fetch(`${process.env.SERVER_HOST}/api/v1/user/admin-contact-us`, {
+        const res = await fetch(`https://api.weddingcity.fr/api/v1/user/admin-contact-us`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
