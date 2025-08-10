@@ -819,7 +819,7 @@ module.exports.admincontactUs = async (req, res, next) => {
     try {
        const {email,message,name}=req.body
 
-        sendEmail(process.env.ADMIN_MAIL,message,)
+        sendEmail(process.env.ADMIN_MAIL,message)
 
         return res.status(responseStatus.success).json(utils.successResponse('Request sent successfully.'))
 
