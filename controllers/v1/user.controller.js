@@ -821,7 +821,7 @@ module.exports.admincontactUs = async (req, res, next) => {
 
          ejs.renderFile('views/contactemail.ejs', { email: name, name, message }, (err, data) => {
                 if (err) console.log(err)
-                else sendEmail(process.env.ADMIN_MAIL,"Contact-us",)
+                else sendEmail(process.env.ADMIN_MAIL,"Contact-us",data)
             })
 
        
