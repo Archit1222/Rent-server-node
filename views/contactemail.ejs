@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Notification</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <tr>
+      <td style="text-align: center; padding: 30px;">
+        <img src="https://i.ibb.co/n8Lw6pW7/358f6923-d1fc-41a3-8c7d-9712947ec4dd.jpg" alt="Logo" style="max-width: 120px; margin-bottom: 20px;">
+        <h2 style="color: #333;">You've got a new message!</h2>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 20px;">
+        <p style="font-size: 16px; color: #555;">Hello Admin,</p>
+
+        <p style="font-size: 16px; color: #555;"><strong><%= name %></strong> has contacted you via the contact form.</p>
+
+        <p style="font-size: 16px; color: #555;"><strong>Email:</strong> <%= email %></p>
+
+        <p style="font-size: 16px; color: #555;"><strong>Message:</strong></p>
+        <p style="font-size: 16px; color: #333; background: #f9f9f9; padding: 15px; border-radius: 6px;"><%= message %></p>
+
+        <p style="font-size: 14px; color: #888; margin-top: 30px;">This message was generated from your website contact form.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
