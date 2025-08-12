@@ -748,6 +748,31 @@ module.exports.deleteUser = async (req, res, next) => {
 
 }
 
+module.exports.sendEmail = async (req, res, next) => {
+    try {
+        const { title, message } = req.body
+
+        if(!title){
+            return res.status(responseStatus.badRequest).json(utils.errorResponse("Title is required."))
+        }
+
+        if(!message){
+            return res.status(responseStatus.badRequest).json(utils.errorResponse("Message is required."))
+        }
+
+         ejs.renderFile('views/contactemail.ejs', { email:req.user.email, message,name:"" }, (err, data) => {
+                if (err) console.log(err)
+                else  sendEmail(process.env.ADMIN_MAIL,title,data)
+        })
+       
+        return res.status(responseStatus.success).json(utils.successResponse("Message sent successfully."))
+    }
+    catch (err) {
+        next(err)
+    }
+
+}
+
 module.exports.privacyPolicy = async (req, res, next) => {
 
     try { return res.render('privacyPolicy.ejs'); }

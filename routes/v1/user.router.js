@@ -66,6 +66,8 @@ userRoutes.post('/admin-contact-us',validator(validation.admincontactUs), userCo
 
 userRoutes.get('/contact-us-page', userController.contactusPage)
 
+userRoutes.post('/send-mail', auth, userController.sendEmail)
+
 
 
 
