@@ -46,7 +46,7 @@ userRoutes.get('/shopImages', userController.getShops)
 
 userRoutes.get('/logout', auth, userController.logout)
 
-userRoutes.get('/delete', auth, userController.deleteUser)
+userRoutes.post('/delete', auth, userController.deleteUser)
 
 userRoutes.get('/privacyPolicy', userController.privacyPolicy)
 

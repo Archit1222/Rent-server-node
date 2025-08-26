@@ -740,7 +740,9 @@ module.exports.deleteUser = async (req, res, next) => {
     try {
         const { _id, language } = req.user
         await userSchema.deleteOne({ _id })
-        return res.status(responseStatus.success).json(utils.successResponse(language == 'en' ? messages.deleteAccount : swMessages.deleteAccount))
+
+        await shopRentSchema.deleteMany({userId:_id})
+        return res.status(responseStatus.success).json(utils.successResponse(messages.deleteAccount))
     }
     catch (err) {
         next(err)
