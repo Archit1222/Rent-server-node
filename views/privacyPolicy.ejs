@@ -4,77 +4,137 @@
     <meta charset="UTF-8" />
     <title>Personal Data Protection – La Ville du Mariage</title>
     <style>
-      body {
-        font-family: "Segoe UI", sans-serif;
-        margin: 40px;
-        padding: 20px;
-        background-color: #f4f4f4;
-        color: #2c3e50;
-      }
+     body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: #f9f9fb;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  line-height: 1.6;
+}
 
-      .container {
-        max-width: 700px;
-        margin: auto;
-        background: #fff;
-        padding: 30px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-      }
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
-      h1 {
-        color: #34495e;
-        margin-bottom: 20px;
-      }
+h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
 
-      ul {
-        padding-left: 20px;
-        margin-bottom: 20px;
-      }
+h2 {
+  font-size: 1.3rem;
+  color: #34495e;
+  margin-top: 25px;
+}
 
-      .note {
-        font-style: italic;
-        color: #555;
-        margin-top: 15px;
-      }
+p {
+  margin-bottom: 15px;
+}
 
-      .checkbox {
-        margin-top: 30px;
-      }
+ul {
+  margin-left: 20px;
+  list-style: disc;
+}
+
+a {
+  color: #0077cc;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.consent {
+  margin-top: 25px;
+  padding: 15px;
+  background: #f0f4f8;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.consent input {
+  margin-right: 10px;
+}
+
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>✅ Protection of Your Personal Data</h1>
+  <div class="container">
+    <h1>Protection de vos données personnelles</h1>
 
-      <p>
-        By creating an account, you agree that La Ville du Mariage collects and
-        processes your data (email, preferences, and interactions with
-        providers) for the following purposes:
-      </p>
+    <p>
+      En créant un compte sur <strong>La Ville du Mariage</strong>, vous acceptez que nous collections 
+      et utilisions vos données personnelles dans le respect du 
+      <strong>Règlement Général sur la Protection des Données (RGPD)</strong> 
+      et de la législation française en vigueur.
+    </p>
 
-      <ul>
-        <li>To allow you access to the platform,</li>
-        <li>To facilitate interactions with wedding service providers,</li>
-        <li>
-          To send you emails related to your experience (such as information,
-          reminders, and personalized offers).
-        </li>
-      </ul>
+    <h2>1. Données collectées</h2>
+    <ul>
+      <li>Vos données d’identification (adresse e-mail, mot de passe)</li>
+      <li>Vos préférences et choix liés à l’organisation de votre mariage</li>
+      <li>Vos interactions avec les prestataires référencés sur la plateforme</li>
+      <li>Vos historiques de navigation et d’utilisation (favoris, messages échangés)</li>
+    </ul>
 
-      <p>
-        Your data is secure, never resold, and stored within the European Union.
-      </p>
-      <p>
-        You may request the deletion or modification of your data at any time.
-      </p>
+    <h2>2. Finalités de la collecte</h2>
+    <ul>
+      <li>Accès à la plateforme et ses fonctionnalités</li>
+      <li>Faciliter vos échanges avec les prestataires de mariage</li>
+      <li>Envoi de communications liées à votre expérience utilisateur</li>
+      <li>Amélioration des services et de l’expérience globale</li>
+    </ul>
 
-      <!-- <p class="note">
-        🔍 To learn more, please review our Privacy Policy.
-      </p>
+    <h2>3. Base légale du traitement</h2>
+    <ul>
+      <li>Exécution du contrat (gestion du compte, accès à la plateforme)</li>
+      <li>Consentement (communications personnalisées et recommandations)</li>
+      <li>Intérêt légitime (amélioration du service et sécurité)</li>
+    </ul>
 
-      <div class="checkbox">
-        ☐ I understand and accept the Privacy Policy of La Ville du Mariage.
-      </div> -->
-    </div>
-  </body>
+    <h2>4. Durée de conservation</h2>
+    <p>
+      Vos données sont conservées pendant toute la durée d’utilisation de la plateforme 
+      et jusqu’à <strong>3 ans après la dernière interaction</strong>, sauf demande de suppression.
+    </p>
+
+    <h2>5. Partage et sécurité</h2>
+    <ul>
+      <li>Vos données ne sont jamais revendues à des tiers</li>
+      <li>Partage uniquement avec les prestataires que vous contactez volontairement</li>
+      <li>Hébergement en Europe avec mesures de sécurité conformes aux standards</li>
+    </ul>
+
+    <h2>6. Vos droits</h2>
+    <ul>
+      <li>Droit d’accès</li>
+      <li>Droit de rectification</li>
+      <li>Droit de suppression (droit à l’oubli)</li>
+      <li>Droit de limitation ou opposition</li>
+      <li>Droit à la portabilité</li>
+    </ul>
+    <p>
+      Pour exercer vos droits : <a href="mailto:jeff@we-event.eu">jeff@we-event.eu</a>
+    </p>
+
+    <h2>7. Plus d’informations</h2>
+    <p>
+      Consultez notre <a href="#">Politique de Confidentialité</a>.
+    </p>
+
+    <!-- <div class="consent">
+      <input type="checkbox" id="consent">
+      <label for="consent">J’ai lu et j’accepte la Politique de Confidentialité de La Ville du Mariage</label>
+    </div> -->
+  </div>
+</body>
 </html>
