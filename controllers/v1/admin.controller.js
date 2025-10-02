@@ -937,6 +937,11 @@ module.exports.shopList = async (req, res, next) => {
                 preserveNullAndEmptyArrays:true
             }
         },
+        {
+            $addFields:{
+               rentUser:{$cond:['$rentUser','$rentUser',null]} 
+            }
+        },
         ...(sort && order ? [{
             $sort: { [sort]: order }
         }] : [{ $sort: { createdAt: -1 } }]),
