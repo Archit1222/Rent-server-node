@@ -438,12 +438,15 @@ module.exports.getProfile = async (req, res, next) => {
         let message = messages
          let count= await countermodel.findOne({})
 
+        let rentedShops= await shopSchema.find({rentUser:user._id})
+
         //const purchases = await purchaseSchema.find({ user: user._id }).populate({ path: 'item', select: 'name imageUrl type' })
         return res.status(responseStatus.success).json(utils.successResponse(message.profile, {
             userId: user._id,
             userName: user.userName,
             email:user.email,
-            totaluserCount:count.counter
+            totaluserCount:count.counter,
+            rentedShops
             // country: user.country,
             // day: user.day,
             // month: user.month,

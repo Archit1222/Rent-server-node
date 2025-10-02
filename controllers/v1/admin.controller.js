@@ -915,6 +915,28 @@ module.exports.shopList = async (req, res, next) => {
                 })
             }
         },
+        {
+            $lookup:{
+                from:"users",
+                localField:"rentUser",
+                foreignField:"_id",
+                pipeline:[
+                    {
+                        $project:{
+                            userName:1,
+                            email:1
+                        }
+                    }
+                ],
+                as:"rentUser"
+            }
+        },
+        {
+            $unwind:{
+                path:"$rentUser",
+                preserveNullAndEmptyArrays:true
+            }
+        },
         ...(sort && order ? [{
             $sort: { [sort]: order }
         }] : [{ $sort: { createdAt: -1 } }]),
