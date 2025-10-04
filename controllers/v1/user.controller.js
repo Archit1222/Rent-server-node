@@ -446,7 +446,8 @@ module.exports.getProfile = async (req, res, next) => {
             userName: user.userName,
             email:user.email,
             totaluserCount:count.counter,
-            rentedShops
+            rentedShops,
+            AvatarNumber:user.AvatarNumber
             // country: user.country,
             // day: user.day,
             // month: user.month,
