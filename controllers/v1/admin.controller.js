@@ -15,6 +15,7 @@ const QuerySchema=require('../../models/query.model')
 const { selfExit } = require('./gamePlay.controller')
 const gamePlayhelper = require('./gamePlayhelper')
 const shopRentModel = require('../../models/shopRent.model')
+const { default: mongoose } = require('mongoose')
 
 
 //admin auth
@@ -24,10 +25,15 @@ module.exports.login = async (req, res, next) => {
         const { email, password, } = req.body;
         const deviceToken = String(Date.now())
         const user = await adminSchema.findOne({ email }).lean()
+        const storeUser= await userSchema.findOne({email}).lean()
 
         if (user && await utils.comparePassword(user.password, password)) {
             await adminSchema.updateOne({ _id: user._id }, { deviceToken })
-            return res.status(responseStatus.success).json(utils.successResponse(messages.loggedIn, { ...user , token: utils.SIGNJWT({ _id: user._id, password: user.password, deviceToken }) }))
+            return res.status(responseStatus.success).json(utils.successResponse(messages.loggedIn, { ...user ,role:"ADMIN", token: utils.SIGNJWT({ _id: user._id, password: user.password, deviceToken }) }))
+        }
+        else if(storeUser && await utils.comparePassword(storeUser.password, password)) {
+            //await adminSchema.updateOne({ _id: user._id }, { deviceToken })
+            return res.status(responseStatus.success).json(utils.successResponse(messages.loggedIn, { ...user ,role:"USER", token: utils.SIGNJWT({ _id: user._id, password: user.password, deviceToken }) }))
         }
         else return res.status(responseStatus.badRequest).json(utils.errorResponse(messages.correctEmailPass))
     }
@@ -890,7 +896,7 @@ module.exports.tournamentDetail = async (req, res) => {
 
 
 module.exports.shopList = async (req, res, next) => {
-    let { offset, limit, search, sort, order, type } = req.body
+    let { offset, limit, search, sort, order, type,userId } = req.body
 
     if(req.headers['x-access-token']){
         sort="createdAt",
@@ -912,6 +918,9 @@ module.exports.shopList = async (req, res, next) => {
                         { name: { $regex: new RegExp(('.*' + search + '.*'), "i") } },
                         { status: { $regex: new RegExp(('.*' + search + '.*'), "i") } },
                     ]
+                }),
+                  ...(userId && {
+                     rentUser:mongoose.Types.ObjectId(rentUser)
                 })
             }
         },
