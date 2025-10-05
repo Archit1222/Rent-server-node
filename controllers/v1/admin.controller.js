@@ -33,7 +33,7 @@ module.exports.login = async (req, res, next) => {
         }
         else if(storeUser && await utils.comparePassword(storeUser.password, password)) {
             //await adminSchema.updateOne({ _id: user._id }, { deviceToken })
-            return res.status(responseStatus.success).json(utils.successResponse(messages.loggedIn, { ...storeUser ,role:"USER", token: utils.SIGNJWT({ _id: storeUser._id, password: user.password, deviceToken }) }))
+            return res.status(responseStatus.success).json(utils.successResponse(messages.loggedIn, { ...storeUser ,role:"User", token: utils.SIGNJWT({ _id: storeUser._id, password: user.password, deviceToken }) }))
         }
         else return res.status(responseStatus.badRequest).json(utils.errorResponse(messages.correctEmailPass))
     }
