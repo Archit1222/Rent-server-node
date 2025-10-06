@@ -26,6 +26,8 @@ const { shopConfig } = require('../../helpers/shopConfig')
 const { tournamentFixture } = require('./gamePlayhelper')
 const adminModel = require('../../models/admin.model')
 const countermodel= require('../../models/counter.model')
+const shopModel = require('../../models/shop.model')
+const { default: mongoose } = require('mongoose')
 
 function stringGen(len) {
     var text = "";
@@ -896,4 +898,33 @@ module.exports.enterShop = async (req, res, next) => {
     }
 }
 
+module.exports.ownerDashboard = async (req, res, next) => {
+    try {
+        let storeCount= await shopModel.find({rentUser:req.user._id}).count()
+        let queryCount= await QuerySchema.aggregate([
+            {
+                $lookup:{
+                    from:"shops",
+                    localField:"shopId",
+                    foreignField:"_id",
+                    as:"shops"
+                }
+            },
+            {
+                $unwind:{
+                    path:"$shop"
+                }
+            },
+            {
+                $match:{
+                    'shop.rentUser':req.user._id
+                }
+            }
 
+        ])
+        return res.status(responseStatus.success).json(utils.successResponse("Sucess", { storeCount,queryCount:queryCount.length }))
+
+    } catch (error) {
+        next(error)
+    }
+}

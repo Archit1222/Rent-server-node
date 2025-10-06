@@ -42,6 +42,8 @@ userRoutes.post('/shop-purchase', auth, userController.shopPurchase)
 
 userRoutes.post('/coin-purchase', auth, userController.purchaseCoins)
 
+userRoutes.post('/owner-dashboard', auth, userController.ownerDashboard)
+
 userRoutes.get('/shopImages', userController.getShops)
 
 userRoutes.get('/logout', auth, userController.logout)

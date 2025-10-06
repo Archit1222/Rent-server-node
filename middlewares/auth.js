@@ -13,9 +13,12 @@ module.exports.auth = async (req, res, next) => {
             if (userAuth.startsWith('Bearer ')) {
                 const token = userAuth.replace('Bearer', '').trim()
                 const authStatus = await utils.verifyJwt(token)
+                console.log('authStatus',authStatus)
                 if (authStatus) {
                     const userDetails = await userSchema.findOne({ _id: authStatus.id, deviceToken: authStatus?.deviceToken }).lean()
+                     console.log('userDetails',userDetails)
                     if (userDetails) {
+                       
                         if (userDetails.isBlock) return res.status(401).json(utils.errorResponse(message.blocked))
                         if (userDetails.password == authStatus.password) {
                             if (userDetails.deviceToken) {
