@@ -184,6 +184,7 @@ module.exports.admincontactUs = yup.object({
         email: yup.string().required().email(),
         message:yup.string().required(),
         name:yup.string().required(),
+        owneremail:yup.string().required()
     })
 })
 
