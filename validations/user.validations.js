@@ -175,7 +175,8 @@ module.exports.contactUs = yup.object({
         email: yup.string().required().email(),
         concern:yup.string().required(),
         name:yup.string().required(),
-        shopType:yup.string().required()
+        shopType:yup.string().required(),
+        shopId:yup.string().required()
     })
 })
 

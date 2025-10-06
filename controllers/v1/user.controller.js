@@ -756,7 +756,7 @@ module.exports.deleteUser = async (req, res, next) => {
 
 module.exports.sendEmail = async (req, res, next) => {
     try {
-        const { title, message } = req.body
+        const { title, message,owneremail } = req.body
 
         if(!title){
             return res.status(responseStatus.badRequest).json(utils.errorResponse("Title is required."))
@@ -768,7 +768,7 @@ module.exports.sendEmail = async (req, res, next) => {
 
          ejs.renderFile('views/contactemail.ejs', { email:req.user.email, message,name:"" }, (err, data) => {
                 if (err) console.log(err)
-                else  sendEmail(process.env.ADMIN_MAIL,title,data)
+                else  sendEmail(owneremail,title,data)
         })
        
         return res.status(responseStatus.success).json(utils.successResponse("Message sent successfully."))
@@ -835,9 +835,9 @@ module.exports.getVersion = async (req, res, next) => {
 
 module.exports.contactUs = async (req, res, next) => {
     try {
-       const {email,concern,name,shopType}=req.body
+       const {email,concern,name,shopType,shopId}=req.body
 
-       let query= await QuerySchema.create({email,concern,userId:req.user._id,name,shopType})
+       let query= await QuerySchema.create({email,concern,userId:req.user._id,name,shopType,shopId})
 
         return res.status(responseStatus.success).json(utils.successResponse('Query updated to admin successfully.', query))
 
@@ -848,11 +848,11 @@ module.exports.contactUs = async (req, res, next) => {
 
 module.exports.admincontactUs = async (req, res, next) => {
     try {
-       const {email,message,name,owneremail}=req.body
+       const {email,message,name}=req.body
 
          ejs.renderFile('views/contactemail.ejs', { email: email, name, message }, (err, data) => {
                 if (err) console.log(err)
-                else sendEmail(owneremail,"Contact-us",data)
+                else sendEmail(process.env.ADMIN_MAIL,"Contact-us",data)
             })
 
        

@@ -6,6 +6,7 @@ const QuerySchema=Schema = new mongoose.Schema({
   concern: { type: String },
   name:{type: String},
   shopType:{type: String},
+  shopId:{type: mongoose.Types.ObjectId, ref: "shop"}
 },{timestamps:true});
 
 module.exports = mongoose.model('Queries', QuerySchema);
