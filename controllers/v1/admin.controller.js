@@ -1288,9 +1288,29 @@ module.exports.notificationList = async (req, res, next) => {
 
 module.exports.QueryList = async (req, res, next) => {
     try {
-        const { offset, limit, search, sort, order } = req.body
+        const { offset, limit, search, sort, order,userId } = req.body
         const pagination = [{ $skip: offset ? offset : 0 }, { $limit: limit ? limit : 10 }]
         const notificationList = await QuerySchema.aggregate([
+            ...(userId?[
+                 {
+                    $lookup:{
+                        from:"shops",
+                        localField:"shopId",
+                        foreignField:"_id",
+                        as:"shop"
+                    }
+                },
+                {$unwind:{
+                    path:"$shop",
+                    preserveNullAndEmptyArrays:true
+                }},
+                {
+                    $match:{
+                        "shop.rentUser":mongoose.Types.ObjectId(userId)
+                    }
+                }
+            ]:[]
+            ),
             ...(search ? [{
                 $match: {
                     $or: [
