@@ -907,7 +907,7 @@ module.exports.ownerDashboard = async (req, res, next) => {
                     from:"shops",
                     localField:"shopId",
                     foreignField:"_id",
-                    as:"shops"
+                    as:"shop"
                 }
             },
             {
@@ -922,7 +922,30 @@ module.exports.ownerDashboard = async (req, res, next) => {
             }
 
         ])
-        return res.status(responseStatus.success).json(utils.successResponse("Sucess", { storeCount,queryCount:queryCount.length }))
+
+       let vistorCount=  await shopRentSchema.aggregate([
+             {
+                $lookup:{
+                    from:"shops",
+                    localField:"shopId",
+                    foreignField:"_id",
+                    as:"shop"
+                }
+            },
+            {
+                $unwind:{
+                    path:"$shop"
+                }
+            },
+            {
+                $match:{
+                    'shop.rentUser':req.user._id
+                }
+            }           
+        ])
+        return res.status(responseStatus.success).json(utils.successResponse("Sucess", { storeCount
+            ,queryCount:queryCount.length,shopVistorCount:vistorCount
+         }))
 
     } catch (error) {
         next(error)
