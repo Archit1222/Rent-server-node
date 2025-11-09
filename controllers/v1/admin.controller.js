@@ -922,7 +922,7 @@ module.exports.shopList = async (req, res, next) => {
                     ]
                 }),
                   ...(userId && {
-                     rentUser:mongoose.Types.ObjectId(rentUser)
+                     rentUser:mongoose.Types.ObjectId(userId)
                 })
             }
         },
