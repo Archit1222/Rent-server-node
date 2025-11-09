@@ -944,7 +944,7 @@ module.exports.ownerDashboard = async (req, res, next) => {
             }           
         ])
         return res.status(responseStatus.success).json(utils.successResponse("Sucess", { storeCount
-            ,queryCount:queryCount.length,shopVistorCount:vistorCount
+            ,queryCount:queryCount.length,shopVistorCount:vistorCount.length
          }))
 
     } catch (error) {
