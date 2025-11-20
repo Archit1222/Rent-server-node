@@ -11,6 +11,86 @@ const blockSchema = require('../../models/block.model')
 const utils = require('../../helpers/utils')
 const { default: mongoose } = require('mongoose')
 
+const messageSchema = require("../../models/messageSchema");
+
+module.exports.sendMessage = async (socket, user, io, data) => {
+    try {
+        const { receiverId, message,shopId } = data;
+        const senderId = user._id;
+
+        if (!receiverId || !message?.trim()) {
+            return io.to(socket).emit("error", {
+                status: 400,
+                message: "Receiver and message text required"
+            });
+        }
+
+         if (!shopId) {
+            return io.to(socket).emit("error", {
+                status: 400,
+                message: "shopId is required."
+            });
+        }
+
+         // Check shop exists
+        const shop = await shopSchema.findOne({ _id: shopId }).lean();
+        if (!shop) {
+            return io.to(socket).emit("error", {
+                status: 400,
+                message: "Receiver not found"
+            });
+        }
+
+        // Check receiver exists
+        const receiver = await userSchema.findOne({ _id: receiverId }).lean();
+        if (!receiver) {
+            return io.to(socket).emit("error", {
+                status: 400,
+                message: "Receiver not found"
+            });
+        }
+
+        // Save message in DB
+        const messageDoc = await messageSchema.create({
+            senderId,
+            receiverId,
+            message
+        });
+
+        // // Acknowledge back to sender
+        // io.to(socket).emit("getMessage", {
+        //     status: true,
+        //     data: {
+        //         _id: messageDoc._id,
+        //         message,
+        //         receiverId,
+        //         sender:user,
+        //         shop:shop,
+        //         createdAt: messageDoc.createdAt
+        //     }
+        // });
+
+        // Send message to receiver (if user is online)
+        if (receiver.socketId) {
+            io.to(receiver.socketId).emit("newMessage", {
+                _id: messageDoc._id,
+                message,
+                sender:user,
+                shop:shop,
+                createdAt: messageDoc.createdAt
+            });
+        }
+
+    } catch (error) {
+        console.log("Message Error:", error);
+
+        io.to(socket).emit("error", {
+            status: 500,
+            message: "Internal server error"
+        });
+    }
+};
+
 
 
 module.exports.randomMatch = async (socket, user, io, data, isJoined = false) => {
@@ -1211,9 +1291,7 @@ module.exports.disconnectUser = async (socketId, io) => {
     const userDetail = await userSchema.findOne({ socketId }).lean()
     if (userDetail) {
         console.log(':::: disconnect :::: ', userDetail.userName)
-        io.to(userDetail.socketId).emit("selfExitSuccess", {})
         await userSchema.updateOne({ _id: userDetail._id }, { socketId: null })
-        this.selfExit(userDetail, io, true)
     }
 }
 

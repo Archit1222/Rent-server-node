@@ -1,6 +1,7 @@
 
 //messages for the app
 const translate = require('translate-google');
+const { sendMessage } = require('../controllers/v1/gamePlay.controller');
 
 
 module.exports.messages = {
@@ -296,6 +297,7 @@ module.exports.responseStatus = {
 module.exports.socketConstants = {
     opponentFound: "findMatchStatus",
     randomMatch: "randomMatch",
+    sendMessage:"sendMessage",
     gameStart: "gameStart",
     bidRound: "bidRound",
     bidCard: "bidCard",

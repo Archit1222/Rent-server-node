@@ -22,9 +22,9 @@ const utils = require('./helpers/utils')
 const { responseStatus, messages } = require('./helpers/constant')
 
 const { socketConnection } = require('./controllers/v1/socket.controller')
-const { tournamentStuff } = require('./controllers/v1/gamePlayhelper')
+//const { tournamentStuff } = require('./controllers/v1/gamePlayhelper')
 
-//socketConnection()
+socketConnection()
 
 
 const PORT = process.env.PORT || 7000
@@ -82,7 +82,7 @@ app.use((err, req, res, next) => {
 
 //API NOT FOUND
 
-app.use((req, res) => res.status(404).json('server is running.'))
+// app.use((req, res) => res.status(404).json('server is running.'))
 
 server.listen(PORT,"0.0.0.0", () => console.log(`server is listening on ${PORT}`))
 

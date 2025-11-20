@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
-const { gameConstants } = require('../helpers/constant')
 
-const userSchema = mongoose.Schema({
+const userSchema =new  mongoose.Schema({
     userName: { type: String, default: null },
     fullName: { type: String, default: null },
     day: { type: String, default: null },
