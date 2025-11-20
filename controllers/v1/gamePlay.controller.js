@@ -66,7 +66,7 @@ module.exports.sendMessage = async (socket, user, io, data) => {
         //         receiverId,
         //         sender:user,
         //         shop:shop,
-        //         createdAt: messageDoc.createdAt
+        //         createdAt: messageDoc.createdAt  
         //     }
         // });
 
