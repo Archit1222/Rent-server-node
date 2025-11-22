@@ -7,7 +7,13 @@ const cors = require('cors')
 const http = require('http')
 const path = require('path')
 const server = http.createServer(app)
-const io = require('socket.io')(server)
+const io = require('socket.io')(server, {
+  cors: {
+    origin: "*",  // or specific origin of your WebGL build
+    methods: ["GET", "POST"]
+  },
+  transports: ["websocket"]
+})
 global.io = io
 
 const ejs = require('ejs')
