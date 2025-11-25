@@ -72,35 +72,74 @@ module.exports.auth = async (req, res, next) => {
 }
 
 
+// module.exports.socketUserAuthentication = async (socket, next) => {
+//     try {
+//         const authToken = socket.handshake.headers['x-access-token']
+//         console.log("authtoken:::::::::: ", authToken);
+//         if (authToken && authToken.startsWith('Bearer ')) {
+//             const verify = await utils.verifyJwt(authToken.replace("Bearer ", ""))
+
+//             const socketId = socket.id
+//             const { id, deviceToken } = verify
+//             if (verify) {
+//                 const user = await userSchema.findOne({ _id: id }).lean()
+//                 if (user) {
+//                     await userSchema.updateOne({ _id: id }, { socketId })
+//                     socket.user = { ...user, socketId }
+//                     socket.deviceToken = deviceToken
+//                     next()
+//                 }
+//                 else {
+//                     return next(new Error(messages.session))
+//                 }
+//             }
+//             else {
+//                 global.io.to(socketId).emit(socketConstants.error, { message: swMessages.deviceErr, status: 401 })
+
+//                 console.log("user::::::::::::::::22", socketId)
+//                 return next(new Error(messages.session))
+//             }
+//         }
+//         else return next(new Error(messages.session))
+
+//     } catch (error) { return next(error) }
+// }
+
+
 module.exports.socketUserAuthentication = async (socket, next) => {
     try {
-        const authToken = socket.handshake.headers['x-access-token']
-        console.log("authtoken:::::::::: ", authToken);
+        // Accept token from BOTH header (websocket) and query (polling)
+        let authToken = socket.handshake.headers['x-access-token']
+                     || socket.handshake.query.token;
+
+        console.log("authToken:::::::::: ", authToken);
+
         if (authToken && authToken.startsWith('Bearer ')) {
-            const verify = await utils.verifyJwt(authToken.replace("Bearer ", ""))
+            const verify = await utils.verifyJwt(authToken.replace("Bearer ", ""));
 
-            const socketId = socket.id
-            const { id, deviceToken } = verify
+            const socketId = socket.id;
+            const { id, deviceToken } = verify;
+
             if (verify) {
-                const user = await userSchema.findOne({ _id: id }).lean()
+                const user = await userSchema.findOne({ _id: id }).lean();
+
                 if (user) {
-                    await userSchema.updateOne({ _id: id }, { socketId })
-                    socket.user = { ...user, socketId }
-                    socket.deviceToken = deviceToken
-                    next()
+                    await userSchema.updateOne({ _id: id }, { socketId });
+                    socket.user = { ...user, socketId };
+                    socket.deviceToken = deviceToken;
+                    return next();
+                } else {
+                    return next(new Error(messages.session));
                 }
-                else {
-                    return next(new Error(messages.session))
-                }
+            } else {
+                global.io.to(socketId).emit(socketConstants.error, { message: swMessages.deviceErr, status: 401 });
+                return next(new Error(messages.session));
             }
-            else {
-                global.io.to(socketId).emit(socketConstants.error, { message: swMessages.deviceErr, status: 401 })
-
-                console.log("user::::::::::::::::22", socketId)
-                return next(new Error(messages.session))
-            }
+        } else {
+            return next(new Error(messages.session));
         }
-        else return next(new Error(messages.session))
 
-    } catch (error) { return next(error) }
-}
+    } catch (error) {
+        return next(error);
+    }
+};
