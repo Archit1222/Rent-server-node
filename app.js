@@ -7,13 +7,25 @@ const cors = require('cors')
 const http = require('http')
 const path = require('path')
 const server = http.createServer(app)
-const io = require('socket.io')(server, {
-  cors: {
-    origin: "*",  // or specific origin of your WebGL build
-    methods: ["GET", "POST"]
-  },
-  transports: ["websocket"]
-})
+// const io = require('socket.io')(server, {
+//   cors: {
+//     origin: "*",  // or specific origin of your WebGL build
+//     methods: ["GET", "POST"]
+//   },
+//   transports: ["websocket"]
+// })
+
+const io = require("socket.io")(server, {
+    path: "/socket.io",
+    transports: ["polling", "websocket"],   // REQUIRED for WebGL
+    allowEIO3: true,                        // REQUIRED for v2 clients
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["x-access-token"],
+        credentials: true
+    }
+});
 global.io = io
 
 const ejs = require('ejs')
