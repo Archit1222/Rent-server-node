@@ -58,17 +58,9 @@ module.exports.sendMessage = async (socket, user, io, data) => {
         });
 
         // // Acknowledge back to sender
-        // io.to(socket).emit("getMessage", {
-        //     status: true,
-        //     data: {
-        //         _id: messageDoc._id,
-        //         message,
-        //         receiverId,
-        //         sender:user,
-        //         shop:shop,
-        //         createdAt: messageDoc.createdAt  
-        //     }
-        // });
+        io.to(socket).emit("newMessage", {
+            message:"Dummy text message for testing only."
+        });
 
         // Send message to receiver (if user is online)
         if (receiver.socketId) {
