@@ -1,6 +1,6 @@
 const { socketUserAuthentication } = require('../../middlewares/auth')
 const userSchema = require('../../models/user.model')
-const { randomMatch, bidRound, bidCard, selfExit, playCard, disconnectUser, requestStatus, onMaximize, chat, changeLanguage, gameWinSuccess,sendMessage } = require('./gamePlay.controller')
+const { randomMatch, bidRound, bidCard, selfExit, playCard, disconnectUser, requestStatus, onMaximize, chat, changeLanguage, gameWinSuccess,sendMessage, chatList, chatHistory } = require('./gamePlay.controller')
 const { socketConstants, messages, swMessages, getBadge } = require('../../helpers/constant')
 const { lastGameStatus } = require('./gamePlayhelper')
 
@@ -24,6 +24,10 @@ module.exports.socketConnection = () => {
         //send message
 
         socket.on(socketConstants.sendMessage, (data) => sendMessage(socketId, socket.user, io, data))
+
+        socket.on(socketConstants.chatList, (data) => chatList(socketId, socket.user, io, data))
+
+        socket.on(socketConstants.chatHistory, (data) => chatHistory(socketId, socket.user, io, data))
 
         // socket.on(socketConstants.randomMatch, (data) => randomMatch(socketId, socket.user, io, data, true))
 

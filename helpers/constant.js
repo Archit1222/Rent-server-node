@@ -1,7 +1,6 @@
 
 //messages for the app
 const translate = require('translate-google');
-const { sendMessage } = require('../controllers/v1/gamePlay.controller');
 
 
 module.exports.messages = {
@@ -326,7 +325,9 @@ module.exports.socketConstants = {
     tournamentResult: 'tournamentResult',
     lastGameStatus: 'lastGameStatus',
     gameWin: 'gameWin',
-    gameWinSuccess: 'gameWinSuccess'
+    gameWinSuccess: 'gameWinSuccess',
+    chatList:"chatList",
+    chatHistory:"chatHistory"
 
 }
 

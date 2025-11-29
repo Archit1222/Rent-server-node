@@ -9,9 +9,9 @@ const { socketConstants, messages, swMessages, getBadge } = require('../../helpe
 const gameRequestSchema = require('../../models/gamerequest.model')
 const blockSchema = require('../../models/block.model')
 const utils = require('../../helpers/utils')
-const { default: mongoose } = require('mongoose')
 
 const messageSchema = require("../../models/messageSchema");
+const mongoose= require("mongoose")
 
 module.exports.sendMessage = async (socket, user, io, data) => {
     try {
@@ -80,6 +80,203 @@ module.exports.sendMessage = async (socket, user, io, data) => {
                 createdAt: messageDoc.createdAt
             });
         }
+
+    } catch (error) {
+        console.log("Message Error:", error);
+
+        io.to(socket).emit("error", {
+            status: 500,
+            message: "Internal server error"
+        });
+    }
+};
+
+
+module.exports.chatList = async (socket, user, io, data) => {
+    try {
+        let {offset,limit}=data
+        if(!offset) offset=0
+        if(!limit) limit=10
+        const userId= mongoose.Types.ObjectId(user._id)
+        const chatList = await messageSchema.aggregate([
+        {
+                $match: {
+                    $or: [
+                    { senderId: userId },
+                    { receiverId: userId }
+                    ]
+                }
+        },
+        {
+        // Create a consistent chat key so sender-receiver order doesn't matter
+            $addFields: {
+                chatUser: {
+                $cond: [
+                    { $eq: ["$senderId", new mongoose.Types.ObjectId(userId)] },
+                    "$receiverId",
+                    "$senderId"
+                ]
+                }
+            }
+        },
+        {
+        $sort: { createdAt: -1 } // sort latest first before grouping
+        },
+        {
+            $group: {
+                _id: "$chatUser",
+                lastMessage: { $first: "$message" },
+                lastMessageTime: { $first: "$createdAt" },
+                lastSender: { $first: "$senderId" },
+                unreadCount: {
+                $sum: {
+                    $cond: [
+                    {
+                        $and: [
+                        { $eq: ["$receiverId", new mongoose.Types.ObjectId(userId)] },
+                        { $eq: ["$isRead", false] }
+                        ]
+                    },
+                    1,
+                    0
+                    ]
+                }
+                }
+            }
+        },
+        {
+        // Join user info
+            $lookup: {
+                from: "users",
+                localField: "_id",
+                // pipeline:[
+                //     {
+                //         $lookup:{
+                //             from:"files",
+                //             localField:"profileImage",
+                //             foreignField:"_id",
+                //             as:"profileImage"
+                //         }
+                //     },
+                //     {$unwind:{path:"$profileImage"}}
+                // ],
+                foreignField: "_id",
+                as: "user"
+            }
+        },
+        { $unwind: "$user" },
+        {
+            $project: {
+                _id: 0,
+                userId: "$_id",
+                userName: "$user.userName",   // change field as per your user schema
+                profileImage: "$user.profileImage", // optional
+                lastMessage: 1,
+                lastMessageTime: 1,
+                unreadCount: 1
+            }
+        },
+        {
+           $sort: { lastMessageTime: -1 } // latest chat on top
+        },
+        { $skip: offset },
+        { $limit: limit }
+        ]);
+
+         const totalUsers = await messageSchema.aggregate([
+            {
+            $match: {
+                $or: [
+                { senderId: userId },
+                { receiverId: userId }
+                ]
+            }
+            },
+            {
+            $addFields: {
+                chatUser: {
+                $cond: [
+                    { $eq: ["$senderId", userId] },
+                    "$receiverId",
+                    "$senderId"
+                ]
+                }
+            }
+            },
+            {
+            $group: { _id: "$chatUser" }
+            },
+            { $count: "total" }]);
+
+        io.to(socket).emit('chatList',{
+             totalCount: totalUsers[0]?.total || 0,
+             chatList
+        })
+
+    } catch (error) {
+        console.log("Message Error:", error);
+
+        io.to(socket).emit("error", {
+            status: 500,
+            message: "Internal server error"
+        });
+    }
+};
+
+
+module.exports.chatHistory = async (socket, user, io, data) => {
+    try {
+        
+        let offset= data.offset || 0
+
+        let limit=data.limit || 10
+
+        let loggedInUserId =mongoose.Types.ObjectId(user._id)
+        let otherUserId = mongoose.Types.ObjectId(data.userId)
+
+        const history = await messageSchema.aggregate([
+            {
+                $match: {
+                    $or: [
+                    { senderId: loggedInUserId, receiverId: otherUserId },
+                    { senderId: otherUserId, receiverId: loggedInUserId }
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    selfMessage: { $eq: ["$senderId", loggedInUserId] }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    messageId: "$_id",
+                    message: 1,
+                    createdAt: 1,
+                    selfMessage: 1
+                }
+            },
+            // { $sort: { createdAt: -1 } }, // latest first
+            { $skip: offset },
+            { $limit: limit },
+            //{ $sort: { createdAt: 1 } } // return in chronological order
+        ]);
+
+        const totalMessages = await messageSchema.aggregate([{
+            $match:{
+                $or: [
+                    { senderId: loggedInUserId, receiverId: otherUserId },
+                    { senderId: otherUserId, receiverId: loggedInUserId }
+                ]
+         }
+        }]);
+
+
+        io.to(socket).emit('chatHistory',{
+             totalCount:totalMessages.length,
+             chatHistory:history
+        })
 
     } catch (error) {
         console.log("Message Error:", error);
