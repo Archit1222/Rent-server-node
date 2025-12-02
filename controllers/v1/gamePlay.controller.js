@@ -220,12 +220,14 @@ module.exports.chatList = async (socket, user, io, data) => {
 
 module.exports.chatHistory = async (socket, user, io, data) => {
     try {
+
+        data=JSON.parse(JSON.stringify(data))
         
         let offset= data.offset || 0
 
         let limit=data.limit || 10
 
-        console.log("chatHistory=>data",data)
+        console.log("chatHistory=>data",JSON.parse(JSON.stringify(data)))
 
         let loggedInUserId =mongoose.Types.ObjectId(user._id)
         let otherUserId = mongoose.Types.ObjectId(data.userId)
