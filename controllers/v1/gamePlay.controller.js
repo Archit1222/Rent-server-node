@@ -90,6 +90,8 @@ module.exports.chatList = async (socket, user, io, data) => {
         if(!offset) offset=0
         if(!limit) limit=10
         const userId= mongoose.Types.ObjectId(user._id)
+         console.log("chatList=>data",data)
+        
         const chatList = await messageSchema.aggregate([
         {
                 $match: {
