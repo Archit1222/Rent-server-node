@@ -15,6 +15,7 @@ const mongoose= require("mongoose")
 
 module.exports.sendMessage = async (socket, user, io, data) => {
     try {
+        //data=JSON.parse(data)
         const { receiverId, message,shopId } = data;
         const senderId = user._id;
 
@@ -52,6 +53,7 @@ module.exports.sendMessage = async (socket, user, io, data) => {
 
         // Save message in DB
         const messageDoc = await messageSchema.create({
+            shopId,
             senderId,
             receiverId,
             message
@@ -86,18 +88,22 @@ module.exports.sendMessage = async (socket, user, io, data) => {
 
 module.exports.chatList = async (socket, user, io, data) => {
     try {
-        let {offset,limit}=data
+        console.log("inside",data)
+       // data=JSON.parse(data)
+        let {offset,limit,storeId,search}=data
         if(!offset) offset=0
         if(!limit) limit=10
         const userId= mongoose.Types.ObjectId(user._id)
+        if(storeId) storeId=mongoose.Types.ObjectId(storeId)
          console.log("chatList=>data",data)
         
         const chatList = await messageSchema.aggregate([
         {
                 $match: {
+                     ...(storeId && { shopId:storeId }),
                     $or: [
-                    { senderId: userId },
-                    { receiverId: userId }
+                        { senderId: userId },
+                        { receiverId: userId }
                     ]
                 }
         },
@@ -170,6 +176,7 @@ module.exports.chatList = async (socket, user, io, data) => {
                 unreadCount: 1
             }
         },
+         ...(search ?[{ $match:{ userName:{ $regex: search, $options: "i" } }}]:[]),
         {
            $sort: { lastMessageTime: -1 } // latest chat on top
         },
@@ -221,7 +228,7 @@ module.exports.chatList = async (socket, user, io, data) => {
 module.exports.chatHistory = async (socket, user, io, data) => {
     try {
 
-        data=JSON.parse(data)
+       // data=JSON.parse(data)
         
         let offset= data.offset || 0
 
@@ -252,7 +259,8 @@ module.exports.chatHistory = async (socket, user, io, data) => {
                     messageId: "$_id",
                     message: 1,
                     createdAt: 1,
-                    selfMessage: 1
+                    selfMessage: 1,
+                    shopId:1
                 }
             },
             // { $sort: { createdAt: -1 } }, // latest first
