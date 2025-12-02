@@ -266,6 +266,11 @@ module.exports.chatHistory = async (socket, user, io, data) => {
          }
         }]);
 
+        console.log("chatHistoryRES",{
+             totalCount:totalMessages.length,
+             chatHistory:history
+        })
+
 
         io.to(socket).emit('chatHistory',{
              totalCount:totalMessages.length,
