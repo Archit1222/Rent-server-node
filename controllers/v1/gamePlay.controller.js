@@ -223,6 +223,8 @@ module.exports.chatHistory = async (socket, user, io, data) => {
 
         let limit=data.limit || 10
 
+        console.log("chatHistory=>data",data)
+
         let loggedInUserId =mongoose.Types.ObjectId(user._id)
         let otherUserId = mongoose.Types.ObjectId(data.userId)
 
