@@ -15,7 +15,7 @@ const mongoose= require("mongoose")
 
 module.exports.sendMessage = async (socket, user, io, data) => {
     try {
-        //data=JSON.parse(data)
+        data=JSON.parse(data)
         const { receiverId, message,shopId } = data;
         const senderId = user._id;
 
@@ -89,7 +89,7 @@ module.exports.sendMessage = async (socket, user, io, data) => {
 module.exports.chatList = async (socket, user, io, data) => {
     try {
         console.log("inside",data)
-       // data=JSON.parse(data)
+       data=JSON.parse(data)
         let {offset,limit,storeId,search}=data
         if(!offset) offset=0
         if(!limit) limit=10
@@ -237,15 +237,29 @@ module.exports.chatHistory = async (socket, user, io, data) => {
         console.log("chatHistory=>data",JSON.parse(JSON.stringify(data)),user._id,typeof data.userId)
 
         let loggedInUserId =mongoose.Types.ObjectId(user._id)
-        let otherUserId = mongoose.Types.ObjectId(data.userId)
+        let otherUserId = null
+
+        let storeId=data?.storeId || null
+
+        if(storeId) {
+            storeId=mongoose.Types.ObjectId(storeId)
+
+            otherUserId=mongoose.Types.ObjectId(user._id)
+        }
+        else  otherUserId=mongoose.Types.ObjectId(data.userId)
 
         const history = await messageSchema.aggregate([
             {
                 $match: {
-                    $or: [
-                    { senderId: loggedInUserId, receiverId: otherUserId },
-                    { senderId: otherUserId, receiverId: loggedInUserId }
-                    ]
+                      ...(storeId ? { shopId:storeId ,$or:[{senderId:loggedInUserId},{receiverId:loggedInUserId}] }
+                        :{
+                             $or: [
+                                { senderId: loggedInUserId, receiverId: otherUserId },
+                                { senderId: otherUserId, receiverId: loggedInUserId }
+                            ]
+                        }
+                      ),
+                   
                 }
             },
             {
@@ -254,13 +268,48 @@ module.exports.chatHistory = async (socket, user, io, data) => {
                 }
             },
             {
+                $lookup:{
+                    from:"users",
+                    localField:"senderId",
+                    foreignField:"_id",
+                    pipeline:[
+                        {
+                            $project:{
+                                userName:1
+                            }
+                        }
+                    ],
+                    as:"sender"
+                }
+            },
+            {$unwind:{path:"$sender",preserveNullAndEmptyArrays:true}},
+             {
+                $lookup:{
+                    from:"users",
+                    localField:"receiverId",
+                    foreignField:"_id",
+                    pipeline:[
+                        {
+                            $project:{
+                                userName:1
+                            }
+                        }
+                    ],
+                    as:"receiver"
+                }
+            },
+            {$unwind:{path:"$receiver",preserveNullAndEmptyArrays:true}},
+            {
                 $project: {
                     _id: 0,
                     messageId: "$_id",
                     message: 1,
                     createdAt: 1,
                     selfMessage: 1,
-                    shopId:1
+                    shopId:1,
+                    sender:1,
+                    receiver:1
+
                 }
             },
             // { $sort: { createdAt: -1 } }, // latest first
