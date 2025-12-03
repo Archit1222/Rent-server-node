@@ -42,6 +42,7 @@ module.exports.auth = async (req, res, next) => {
             if (adminAuth.startsWith('Bearer ')) {
                 const token = adminAuth.replace('Bearer', '').trim()
                 const authStatus = await utils.verifyJwt(token)
+                console.log("authStatus",authStatus)
                 if (authStatus) {
                     const userDetails = await adminSchema.findOne({ _id: authStatus._id }).lean()
                     // console.log('authStatus', userDetails)

@@ -16,6 +16,7 @@ const { selfExit } = require('./gamePlay.controller')
 const gamePlayhelper = require('./gamePlayhelper')
 const shopRentModel = require('../../models/shopRent.model')
 const { default: mongoose } = require('mongoose')
+const messageSchema= require('../../models/messageSchema')
 
 
 //admin auth
@@ -1442,4 +1443,207 @@ module.exports.addmanualUser = async (req, res, next) => {
 
      return res.status(responseStatus.success).json(utils.successResponse("User added sucessfully",userData))
 }
+
+
+
+module.exports.chatList = async (req, res) => {
+    try {
+        let { offset, limit, search } = req.body;
+
+        offset = Number(offset) || 0;
+        limit = Number(limit) || 10;
+
+        const userId = mongoose.Types.ObjectId(req.user._id);
+
+        console.log("userId",userId)
+
+        const chatList = await messageSchema.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { senderId: userId },
+                        { receiverId: userId }
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    chatUser: {
+                        $cond: [
+                            { $eq: ["$senderId", userId] },
+                            "$receiverId",
+                            "$senderId"
+                        ]
+                    }
+                }
+            },
+            { $sort: { createdAt: -1 } },
+            {
+                $group: {
+                    _id: "$chatUser",
+                    lastMessage: { $first: "$message" },
+                    lastMessageTime: { $first: "$createdAt" },
+                    lastSender: { $first: "$senderId" },
+                    unreadCount: {
+                        $sum: {
+                            $cond: [
+                                {
+                                    $and: [
+                                        { $eq: ["$receiverId", userId] },
+                                        { $eq: ["$isRead", false] }
+                                    ]
+                                },
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "user"
+                }
+            },
+            { $unwind: "$user" },
+            {
+                $project: {
+                    _id: 0,
+                    userId: "$_id",
+                    userName: "$user.userName",
+                    profileImage: "$user.profileImage",
+                    lastMessage: 1,
+                    lastMessageTime: 1,
+                    unreadCount: 1
+                }
+            },
+            ...(search ? [{ $match: { userName: { $regex: search, $options: "i" } } }] : []),
+            { $sort: { lastMessageTime: -1 } },
+            { $skip: offset },
+            { $limit: limit }
+        ]);
+
+        const totalUsers = await messageSchema.aggregate([
+            {
+                $match: {
+                    $or: [{ senderId: userId }, { receiverId: userId }]
+                }
+            },
+            {
+                $addFields: {
+                    chatUser: {
+                        $cond: [
+                            { $eq: ["$senderId", userId] },
+                            "$receiverId",
+                            "$senderId"
+                        ]
+                    }
+                }
+            },
+            { $group: { _id: "$chatUser" } },
+            { $count: "total" }
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            totalCount: totalUsers[0]?.total || 0,
+            chatList
+        });
+
+    } catch (error) {
+        console.log("ChatList Error:", error);
+        return res.status(500).json({ status: 500, message: "Internal server error" });
+    }
+};
+
+
+
+module.exports.chatHistory = async (req, res) => {
+    try {
+        const data = req.body;
+        let offset = Number(data.offset) || 0;
+        let limit = Number(data.limit) || 10;
+
+        if(!data.userId){
+            return res.status(400).json({sucess:false,message:"userId is required."})
+        }
+
+        const loggedInUserId = mongoose.Types.ObjectId(req.user._id);
+        let otherUserId = mongoose.Types.ObjectId(data.userId)
+
+        const history = await messageSchema.aggregate([
+            {
+                $match: {
+                        
+                    $or: [
+                            { senderId: loggedInUserId, receiverId: otherUserId },
+                            { senderId: otherUserId, receiverId: loggedInUserId }
+                         ]
+                        
+                }
+            },
+            {
+                $addFields: {
+                    selfMessage: { $eq: ["$senderId", loggedInUserId] }
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "senderId",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { userName: 1 } }],
+                    as: "sender"
+                }
+            },
+            { $unwind: { path: "$sender", preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "receiverId",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { userName: 1 } }],
+                    as: "receiver"
+                }
+            },
+            { $unwind: { path: "$receiver", preserveNullAndEmptyArrays: true } },
+            {
+                $project: {
+                    _id: 0,
+                    messageId: "$_id",
+                    message: 1,
+                    createdAt: 1,
+                    selfMessage: 1,
+                    shopId: 1,
+                    sender: 1,
+                    receiver: 1
+                }
+            },
+            { $skip: offset },
+            { $limit: limit }
+        ]);
+
+        const totalMessages = await messageSchema.countDocuments({
+            $or: [
+                { senderId: loggedInUserId, receiverId: otherUserId },
+                { senderId: otherUserId, receiverId: loggedInUserId }
+            ]
+        });
+
+        return res.status(200).json({
+            success: true,
+            totalCount: totalMessages,
+            chatHistory: history
+        });
+
+    } catch (error) {
+        console.log("ChatHistory Error:", error);
+        return res.status(500).json({ status: 500, message: "Internal server error" });
+    }
+};
+
+
 

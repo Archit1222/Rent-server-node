@@ -147,4 +147,8 @@ adminRoutes.post(
   adminController.addmanualUser
 );
 
+adminRoutes.post("/chatlist", auth, adminController.chatList);
+
+adminRoutes.post("/chathistory", auth, adminController.chatHistory);
+
 module.exports = adminRoutes;
