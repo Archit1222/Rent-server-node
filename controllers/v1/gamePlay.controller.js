@@ -15,7 +15,7 @@ const mongoose= require("mongoose")
 
 module.exports.sendMessage = async (socket, user, io, data) => {
     try {
-        //data=JSON.parse(data)
+        data=JSON.parse(data)
         const { receiverId, message,shopId } = data;
         const senderId = user._id;
 
@@ -59,6 +59,9 @@ module.exports.sendMessage = async (socket, user, io, data) => {
             message
         });
 
+
+
+
         // // Acknowledge back to sender
         io.to(socket).emit("newMessage", {
             message:"Dummy text message for testing only."
@@ -88,7 +91,7 @@ module.exports.sendMessage = async (socket, user, io, data) => {
 
 module.exports.chatList = async (socket, user, io, data) => {
     try {
-        //data=JSON.parse(data)
+        data=JSON.parse(data)
         let {offset,limit,storeId,search}=data
         if(!offset) offset=0
         if(!limit) limit=10
@@ -229,7 +232,7 @@ module.exports.chatList = async (socket, user, io, data) => {
 module.exports.chatHistory = async (socket, user, io, data) => {
     try {
 
-        //data=JSON.parse(data)
+        data=JSON.parse(data)
         
         let offset= data.offset || 0
 
