@@ -229,7 +229,7 @@ module.exports.chatList = async (socket, user, io, data) => {
 module.exports.chatHistory = async (socket, user, io, data) => {
     try {
 
-        data=JSON.parse(data)
+        //data=JSON.parse(data)
         
         let offset= data.offset || 0
 
