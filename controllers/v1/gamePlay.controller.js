@@ -88,7 +88,7 @@ module.exports.sendMessage = async (socket, user, io, data) => {
 
 module.exports.chatList = async (socket, user, io, data) => {
     try {
-        data=JSON.parse(data)
+        //data=JSON.parse(data)
         let {offset,limit,storeId,search}=data
         if(!offset) offset=0
         if(!limit) limit=10
@@ -124,6 +124,7 @@ module.exports.chatList = async (socket, user, io, data) => {
         {
             $group: {
                 _id: "$chatUser",
+                storeId:{$first:"$shopId"},
                 lastMessage: { $first: "$message" },
                 lastMessageTime: { $first: "$createdAt" },
                 lastSender: { $first: "$senderId" },
@@ -172,7 +173,8 @@ module.exports.chatList = async (socket, user, io, data) => {
                 profileImage: "$user.profileImage", // optional
                 lastMessage: 1,
                 lastMessageTime: 1,
-                unreadCount: 1
+                unreadCount: 1,
+                storeId:1
             }
         },
          ...(search ?[{ $match:{ userName:{ $regex: search, $options: "i" } }}]:[]),
