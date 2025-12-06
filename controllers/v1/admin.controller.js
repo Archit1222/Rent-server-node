@@ -1574,6 +1574,18 @@ module.exports.chatHistory = async (req, res) => {
         const loggedInUserId = mongoose.Types.ObjectId(req.user._id);
         let otherUserId = mongoose.Types.ObjectId(data.userId)
 
+
+         await messageSchema.updateMany(
+                    {
+                        $or:[
+                             { senderId: loggedInUserId, receiverId: otherUserId },
+                            { senderId: otherUserId, receiverId: loggedInUserId }
+                        ],
+                        isRead: false,
+                    },
+                    {  isRead: true  }
+        )
+
         const history = await messageSchema.aggregate([
             {
                 $match: {

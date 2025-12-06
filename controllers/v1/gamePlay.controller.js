@@ -252,6 +252,19 @@ module.exports.chatHistory = async (socket, user, io, data) => {
         }
         else  otherUserId=mongoose.Types.ObjectId(data.userId)
 
+
+        // read messages
+
+        await messageSchema.updateMany(
+            {
+                receiverId: loggedInUserId,
+                isRead: false,
+                ...(storeId ? { shopId: storeId } : {}),
+                ...(data?.userId ? { senderId:mongoose.Types.ObjectId(data?.userId) } : {})
+            },
+            {  isRead: true  }
+        )
+
         const history = await messageSchema.aggregate([
             {
                 $match: {
