@@ -15,7 +15,10 @@ const mongoose= require("mongoose")
 
 module.exports.sendMessage = async (socket, user, io, data) => {
     try {
-        data=JSON.parse(data)
+        //data=JSON.parse(data)
+         if (typeof data === "string") {
+            data = JSON.parse(data);
+        }  
         const { receiverId, message,shopId } = data;
         const senderId = user._id;
 
@@ -237,7 +240,11 @@ module.exports.chatList = async (socket, user, io, data) => {
 module.exports.chatHistory = async (socket, user, io, data) => {
     try {
 
-        data=JSON.parse(data)
+        //data=JSON.parse(data)
+
+         if (typeof data === "string") {
+            data = JSON.parse(data);
+         }  
         
         let offset= data.offset || 0
 
