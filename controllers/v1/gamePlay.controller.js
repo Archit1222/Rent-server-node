@@ -91,6 +91,7 @@ module.exports.sendMessage = async (socket, user, io, data) => {
 
 module.exports.chatList = async (socket, user, io, data) => {
     try {
+        console.log("data type",typeof data)
         data=JSON.parse(data)
         let {offset,limit,storeId,search}=data
         if(!offset) offset=0
