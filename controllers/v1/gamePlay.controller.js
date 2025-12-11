@@ -66,9 +66,9 @@ module.exports.sendMessage = async (socket, user, io, data) => {
 
 
         // // Acknowledge back to sender
-        io.to(socket).emit("newMessage", {
-            message:"Dummy text message for testing only."
-        });
+        // io.to(socket).emit("newMessage", {
+        //     message:"Dummy text message for testing only."
+        // });
 
         // Send message to receiver (if user is online)
         if (receiver.socketId) {
