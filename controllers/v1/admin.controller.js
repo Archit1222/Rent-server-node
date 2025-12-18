@@ -1122,7 +1122,7 @@ module.exports.shopVisitors = async (req, res, next) => {
 
     if(req.headers['x-access-token']){
         let shop= await shopModel.findOne({rentUser:req.user._id})
-        id= shop._id
+        if(shop) id= shop._id
     }
 
     if (!utils.validMongoId(id)) return res.status(responseStatus.badRequest).json(utils.errorResponse(messages.shopNotFound))
