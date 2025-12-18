@@ -1118,8 +1118,12 @@ module.exports.shopView = async (req, res, next) => {
 }
 
 module.exports.shopVisitors = async (req, res, next) => {
-    const id = req.body.shopId
+    let id = req?.body?.shopId
 
+    if(req.headers['x-access-token']){
+        let shop= await shopModel.findOne({rentUser:req.user._id})
+        id= shop._id
+    }
 
     if (!utils.validMongoId(id)) return res.status(responseStatus.badRequest).json(utils.errorResponse(messages.shopNotFound))
 
