@@ -1180,9 +1180,14 @@ module.exports.shopVisitors = async (req, res, next) => {
     },
 
     {
-      $replaceRoot: {
-        newRoot: "$users",
-      },
+        $replaceRoot: {
+            newRoot: {
+            $mergeObjects: [
+                "$users",
+                { createdAt: "$createdAt" } // from shopRentModel
+            ]
+            }
+        }
     },
 
     // ...(sort && order
