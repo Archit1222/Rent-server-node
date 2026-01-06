@@ -1146,17 +1146,19 @@ module.exports.shopVisitors = async (req, res, next) => {
         foreignField: "_id",
       },
     },
-
     {
-        $project: {
-            "users.userName": 1,
-            "users.email": 1,
-          //  "users.createdAt": 1,
-            "users.isBlock": 1,
-            "users.profileImage": 1,  
-            "users._id": 1,  
-        }
+      $unwind: "$users",
     },
+        // {
+        //     $project: {
+        //         "users.userName": 1,
+        //         "users.email": 1,
+        //       //  "users.createdAt": 1,
+        //         "users.isBlock": 1,
+        //         "users.profileImage": 1,  
+        //         "users._id": 1,  
+        //     }
+        // },
 
     ...(search
       ? [
@@ -1176,9 +1178,6 @@ module.exports.shopVisitors = async (req, res, next) => {
         }
     },
     {
-      $unwind: "$users",
-    },
-    {
         $replaceRoot: {
             newRoot: {
             $mergeObjects: [
@@ -1187,6 +1186,15 @@ module.exports.shopVisitors = async (req, res, next) => {
             ]
             }
         }
+    },
+     {
+            $project: {
+                userName: 1,
+                email: 1,
+                profileImage: 1,
+                isBlock: 1,
+                createdAt: 1,
+            }
     },
 
     // ...(sort && order
