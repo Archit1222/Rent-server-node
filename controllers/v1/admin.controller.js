@@ -1569,7 +1569,7 @@ module.exports.chatHistory = async (req, res) => {
     try {
         const data = req.body;
         let offset = Number(data.offset) || 0;
-        let limit = Number(data.limit) || 1000;
+        let limit = 1000;
 
         if(!data.userId){
             return res.status(400).json({sucess:false,message:"userId is required."})
