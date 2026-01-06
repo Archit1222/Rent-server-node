@@ -1151,7 +1151,7 @@ module.exports.shopVisitors = async (req, res, next) => {
         $project: {
             "users.userName": 1,
             "users.email": 1,
-            "users.createdAt": 1,
+          //  "users.createdAt": 1,
             "users.isBlock": 1,
             "users.profileImage": 1,  
             "users._id": 1,  
@@ -1178,7 +1178,6 @@ module.exports.shopVisitors = async (req, res, next) => {
     {
       $unwind: "$users",
     },
-
     {
         $replaceRoot: {
             newRoot: {
