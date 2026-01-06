@@ -1171,6 +1171,11 @@ module.exports.shopVisitors = async (req, res, next) => {
         ]
       : []),
     {
+        $sort:{
+            createdAt:-1
+        }
+    },
+    {
       $unwind: "$users",
     },
 
@@ -1180,13 +1185,13 @@ module.exports.shopVisitors = async (req, res, next) => {
       },
     },
 
-    ...(sort && order
-      ? [
-          {
-            $sort: { [sort]: -1 },
-          },
-        ]
-      : [{ $sort: { createdAt: -1 } }]),
+    // ...(sort && order
+    //   ? [
+    //       {
+    //         $sort: { [sort]: -1 },
+    //       },
+    //     ]
+    //   : [{ $sort: { createdAt: -1 } }]),
     {
       $facet: {
         data: pagination,
