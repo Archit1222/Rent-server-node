@@ -1183,7 +1183,7 @@ module.exports.shopVisitors = async (req, res, next) => {
     ...(sort && order
       ? [
           {
-            $sort: { [sort]: order },
+            $sort: { [sort]: -1 },
           },
         ]
       : [{ $sort: { createdAt: -1 } }]),
