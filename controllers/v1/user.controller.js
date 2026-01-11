@@ -760,6 +760,14 @@ module.exports.sendEmail = async (req, res, next) => {
     try {
         const { title, message,owneremail } = req.body
 
+        let shopDetails=await shopSchema.findOne({rentUser:owneremail})
+
+        if(!shopDetails){
+            return res.status(responseStatus.badRequest).json(utils.errorResponse("You are not authorized to send message to owner."))
+        }
+        
+        let shopId=shopDetails._id
+
         if(!title){
             return res.status(responseStatus.badRequest).json(utils.errorResponse("Title is required."))
         }
@@ -767,6 +775,9 @@ module.exports.sendEmail = async (req, res, next) => {
         if(!message){
             return res.status(responseStatus.badRequest).json(utils.errorResponse("Message is required."))
         }
+
+        await QuerySchema.create({email:req.user.email,concern:message,userId:req.user._id,shopId})
+
 
          ejs.renderFile('views/contactemail.ejs', { email:req.user.email, message,name:"" }, (err, data) => {
                 if (err) console.log(err)
