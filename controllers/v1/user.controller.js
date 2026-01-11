@@ -760,7 +760,13 @@ module.exports.sendEmail = async (req, res, next) => {
     try {
         const { title, message,owneremail } = req.body
 
-        let shopDetails=await shopSchema.findOne({rentUser:owneremail})
+        let ownerUser=await userSchema.findOne({email:owneremail})
+
+        if(!ownerUser){
+            return res.status(responseStatus.badRequest).json(utils.errorResponse("Owner email is not valid."))
+        }
+
+        let shopDetails=await shopSchema.findOne({rentUser:ownerUser._id})
 
         if(!shopDetails){
             return res.status(responseStatus.badRequest).json(utils.errorResponse("You are not authorized to send message to owner."))
